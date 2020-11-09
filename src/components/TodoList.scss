@@ -1,0 +1,16 @@
+.todolist {
+  &.done {
+    .text {
+      color: #999999;
+      text-decoration: line-through;
+    }
+  }
+  .text {
+    cursor: pointer;
+  }
+  .delete {
+    margin-left: 4px;
+    color: red;
+    cursor: pointer;
+  }
+}

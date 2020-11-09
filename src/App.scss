@@ -1,0 +1,7 @@
+$font: 20px;
+
+.App {
+  $font: 12px !default;
+
+  font-size: $font;
+}

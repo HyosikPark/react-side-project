@@ -1,0 +1,455 @@
+// & : 참조한 상위 선택자로 치환
+.fs {
+  &-small {
+    font-size: 12px;
+  }
+  &-medium {
+    font-size: 14px;
+  }
+  &-large {
+    font-size: 16px;
+  }
+}
+/* css */
+.fs-small {
+  font-size: 12px;
+}
+.fs-medium {
+  font-size: 14px;
+}
+.fs-large {
+  font-size: 16px;
+}
+
+// @at-root : 중첩 벗어나기
+
+.list {
+  $w: 100px;
+  $h: 50px;
+  @at-root .box {
+    width: $w;
+    height: $h;
+  }
+}
+/* css */
+.list {
+  width: 100px;
+  height: 50px;
+}
+.box {
+  width: 100px;
+  height: 50px;
+}
+
+// 동일한 네임 스페이스 처리
+
+.box {
+  font: {
+    weight: bold;
+    size: 10px;
+    family: sans-serif;
+  }
+  margin: {
+    top: 10px;
+    left: 20px;
+  }
+  padding: {
+    bottom: 40px;
+    right: 30px;
+  }
+}
+/* css */
+.box {
+  font-weight: bold;
+  font-size: 10px;
+  font-family: sans-serif;
+  margin-top: 10px;
+  margin-left: 20px;
+  padding-bottom: 40px;
+  padding-right: 30px;
+}
+
+// 변수 지정 $
+$color-primary: #e96900;
+// 변수는 하위스코프에서 참조 가능하며 상위스코프에서 참조 불가능.
+
+// !global; 변수의 유효범위를 전역으로 설정 기존 변수가 있을 경우 덮어씀.
+.box1 {
+  $color: #111 !global;
+}
+
+// !default 할당된 변수가 없다면 변수로 사용 스코프가 겹치지 않아도 해당
+// 특히 import로 라이브러리 사용시에 변수가 겹치지 않기 위해 사용
+
+$color-active: red;
+
+.box {
+  $color-active: blue !default;
+
+  background: $color-active; // red
+}
+
+// unquote() 문자에서 따옴표 제거
+// #{}문자열에 변수 넣을 때 사용
+$family: unquote('Droid+Sans');
+@import url('#{$family}');
+
+// import로 한번에 여러 파일 가져오기 가능 @import "header", "footer";
+
+// Partials scss파일 앞에 _를 붙인 파일은 css파일로 컴파일 되지 않는다.
+// import하여 사용하는 파일일 경우 _를 붙여 컴파일을 방지하자.
+
+// 단위가 맞지 않는 연산 calc(50% -20px);
+// 나누기 연산 / 사용시에는 /가 숫자분리로 인식될 수 있기 때문에 다음과 같이 사용한다.
+div {
+  $x: 100px;
+  width: $x / 2; // 변수에 저장된 값을 나누기
+  height: (100px / 2); // 괄호로 묶어서 나누기
+  font-size: 10px + 12px / 3; // 더하기 연산과 같이 사용
+}
+
+// String : 첫번째 피연산자를 기준으로 연산 결과 인식.
+div::after {
+  content: 'Hello ' + World;
+  flex-flow: row + '-reverse' + ' ' + wrap;
+}
+// CSS
+div::after {
+  content: 'Hello World';
+  flex-flow: row-reverse wrap;
+}
+
+// 색상 연산
+$color: rgba(10, 20, 30, 0.5);
+
+div {
+  color: opacity($color, 0.3); //0.5 + 0.3
+  background-color: transparentize($color, 0.2); // 20% 더 투명하게 / 0.5 - 0.2
+}
+
+// Boolean @if and(그리고), or(또는), not(부정),
+$width: 90px;
+div {
+  @if not($width >= 100px) {
+    height: 300px;
+  } @else if () {
+  }
+}
+// css
+div {
+  height: 300px;
+}
+
+// Mixins : 재사용 할 CSS 선언 그룹 @mixin(선언하기) @include(사용하기)
+@mixin large-text {
+  font : {
+    size: 22px;
+    weight: bold;
+    family: sans-serif;
+  }
+  color: orange;
+
+  &::after {
+    content: '!!';
+  }
+
+  span.icon {
+    background: url();
+  }
+}
+
+h1 {
+  @include large-text;
+}
+div {
+  @include large-text;
+}
+
+// css
+h1 {
+  font-size: 22px;
+  font-weight: bold;
+  font-family: sans-serif;
+  color: orange;
+}
+h1::after {
+  content: '!!';
+}
+h1 span.icon {
+  background: url('/images/icon.png');
+}
+
+div {
+  font-size: 22px;
+  font-weight: bold;
+  font-family: sans-serif;
+  color: orange;
+}
+div::after {
+  content: '!!';
+}
+div span.icon {
+  background: url('/images/icon.png');
+}
+
+// SCSS
+// @mixin 믹스인이름($매개변수) {
+//   스타일;
+// }
+// @include 믹스인이름(인수);
+
+// 매개변수에 기본값 설정 가능 $width: 1px, $color: black
+@mixin dash-line($width, $color) {
+  border: $width dashed $color;
+}
+
+.box1 {
+  @include dash-line(1px, red);
+}
+.box2 {
+  @include dash-line(4px, blue);
+}
+
+// 믹스인 키워드 인수 매개변수에 기본값을 할당할 것
+@mixin position($p: absolute, $t: null, $b: null, $l: null, $r: null) {
+  position: $p;
+  top: $t;
+  bottom: $b;
+  left: $l;
+  right: $r;
+}
+
+.fixed {
+  // 인수 순서없이 매개변수 연결 가능.
+  @include position(fixed, $t: 3px, $r: 5px);
+}
+// css
+.fixed {
+  position: fixed;
+  top: 3px;
+  right: 5px;
+}
+
+// 가변인수
+@mixin bg($width, $height, $bg-values...) {
+  width: $width;
+  height: $height;
+  background: $bg-values;
+}
+
+div {
+  @include bg(
+    10px,
+    20px,
+    url('/images/a.png') no-repeat 10px 20px,
+    url('/images/b.png') no-repeat,
+    url('/images/c.png')
+  );
+}
+// 반대
+@mixin font($style: normal, $weight: normal, $size: 16px, $family: sans-serif) {
+  font: {
+    style: $style;
+    weight: $weight;
+    size: $size;
+    family: $family;
+  }
+}
+div {
+  $font-values: italic, bold, 16px, sans-serif;
+  @include font($font-values...);
+}
+
+span {
+  // 필요한 값만 줄 때
+  @include font((weight: 900, family: monospace)...);
+}
+
+// @content mixin에 스타일 블록을 추가해서 사용 가능
+
+@mixin icon($url) {
+  &::after {
+    content: $url;
+    @content;
+  }
+}
+
+.icon2 {
+  @include icon('/images/icon.png') {
+    position: absolute;
+  }
+}
+// css
+.icon::after {
+  content: '/images/icon.png';
+  position: absolute;
+}
+
+// 스타일 블록이 정의 된 범위
+$color: red;
+
+@mixin colors($color: blue) {
+  // Mixin의 범위
+  @content;
+  background-color: $color; // blue
+  border-color: $color; // blue
+}
+
+div {
+  @include colors() {
+    // 스타일 블록이 정의된 범위
+    color: $color; // red 사용 매개변수값이 사용되지 않음
+  }
+}
+
+// @extend 특정 선택자가 다른 선택자의 스타일을 모두 사용해야 하는 경우
+// 사용 권장하지 않음 차라리 mixin 사용
+.btn {
+  padding: 10px;
+  margin: 10px;
+  background: blue;
+}
+.btn-danger {
+  @extend .btn;
+  background: red;
+}
+// css
+.btn,
+.btn-danger {
+  padding: 10px;
+  margin: 10px;
+  background: blue;
+}
+.btn-danger {
+  background: red;
+}
+
+// @function : 연산이 필요할 때 사용 @return으로 반환 함수명이 내장함수와 겹치지 않도록 별도의 접두어를 붙여 함수명을 정할 것.
+
+@function limitSize($size) {
+  @if $size >= 0 and $size <= 200px {
+    @return 200px;
+  } @else {
+    @return 800px;
+  }
+}
+
+div {
+  width: limitSize(180px);
+  height: limitSize(340px);
+}
+
+// if(조건, true, false) 3항 연산자와 비슷
+$width: 555px;
+
+div {
+  width: if($width > 300px, $width, null);
+}
+// css
+div {
+  width: 555px;
+}
+
+// @if () {} @else if () {} else {}    ()생략 가능
+
+// @for $변수 from 시작 through 종료 {반복내용} 종료 만큼 반복
+// @for $변수 from 시작 to 종료 {반복내용}  종료 직전까지 반복
+@for $i from 1 through 3 {
+  .through:nth-child(#{i}) {
+    width: 20px * $i;
+  }
+}
+
+// @each $변수 in 데이터
+$fruits: (apple, orange, banana, mango);
+
+.fruits {
+  @each $fruit in $fruits {
+    li.#{$fruit} {
+      background: url('/images/#{$fruit}.png');
+    }
+  }
+}
+// css
+.fruits li.apple {
+  background: url('/images/apple.png');
+}
+.fruits li.orange {
+  background: url('/images/orange.png');
+}
+.fruits li.banana {
+  background: url('/images/banana.png');
+}
+.fruits li.mango {
+  background: url('/images/mango.png');
+}
+
+// index 내장함수 사용
+.fruit {
+  @each $fruit in $fruits {
+    $i: index($fruits, $fruit);
+    li:nth-child(#{$i}) {
+      left: 50px * $i;
+    }
+  }
+}
+// css
+.fruits li:nth-child(1) {
+  left: 50px;
+}
+.fruits li:nth-child(2) {
+  left: 100px;
+}
+.fruits li:nth-child(3) {
+  left: 150px;
+}
+.fruits li:nth-child(4) {
+  left: 200px;
+}
+
+// 여러개 동시 반복문 데이터의 Length가 같아야 함
+
+$apple: (apple, a);
+$banana: (banana, b);
+$orange: (orange, c);
+
+@each $fruit, $alphabet in $apple, $banana, $orange {
+  .box-#{$fruit} {
+    background: url('/images/#{$alphabet}');
+  }
+}
+
+.box-apple {
+  background: url('/images/a.png');
+}
+.box-orange {
+  background: url('/images/b.png');
+}
+.box-banana {
+  background: url('/images/c.png');
+}
+
+// Map 데이터 형식으로 반복 @each $key변수, $value변수 in 데이터 {}
+
+$fruit-data: (
+  apple: korea,
+  banana: china,
+  orange: japan,
+);
+@each $fruit, $country in $fruit-data {
+  .box-#{$fruit} {
+    background: url('/images/#{$country}.png');
+  }
+}
+
+.box-apple {
+  background: url('/images/korea.png');
+}
+.box-orange {
+  background: url('/images/china.png');
+}
+.box-banana {
+  background: url('/images/japan.png');
+}
+
+// @while 조건이 false될 때까지 반복
