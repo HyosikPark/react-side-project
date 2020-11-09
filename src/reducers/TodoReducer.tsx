@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 const ADD_TODO = 'ADD_TODO' as const;
 const TOGGLE_TODO = 'TOGGLE_TODO' as const;
 const REMOVE_TODO = 'REMOVE_TODO' as const;
