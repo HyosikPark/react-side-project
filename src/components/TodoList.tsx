@@ -1,32 +1,20 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { removeTodo, Todo, toggleTodo } from '../reducers/TodoReducer';
-import './TodoList.scss';
+import { useSelector } from 'react-redux';
+import { RootState } from '../modules';
+import { Todo } from '../modules/todos';
+import TodoItem from './TodoItem';
 
-type TodoListProps = {
-  todo: Todo;
-};
+const TodoList = () => {
+  const todos: Todo[] = useSelector((state: RootState) => state.todos);
 
-const TodoList = ({ todo }: TodoListProps) => {
-  const dispatch = useDispatch();
-
-  const todoDone = () => {
-    dispatch(toggleTodo(todo.id));
-  };
-
-  const todoDelete = () => {
-    dispatch(removeTodo(todo.id));
-  };
+  if (todos.length === 0) return <p>등록된 알람이 없습니다.</p>;
 
   return (
-    <li className={`todolist ${todo.done ? 'done' : ''}`}>
-      <span className='text' onClick={todoDone}>
-        {todo.text}
-      </span>
-      <span className='delete' onClick={todoDelete}>
-        (x)
-      </span>
-    </li>
+    <ul>
+      {todos.map((todo) => (
+        <TodoItem key={todo.id} todo={todo} />
+      ))}
+    </ul>
   );
 };
 

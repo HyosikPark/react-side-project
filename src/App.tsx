@@ -1,12 +1,12 @@
 import React from 'react';
-import TodosList from './components/TodosList';
-import TodoWrite from './components/TodoWrite';
+import TodoInsert from './components/TodoInsert';
+import TodoList from './components/TodoList';
 
 const App = () => {
   return (
     <>
-      <TodoWrite />
-      <TodosList />
+      <TodoInsert />
+      <TodoList />
     </>
   );
 };
