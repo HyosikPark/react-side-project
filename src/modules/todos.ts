@@ -4,6 +4,7 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
+import { RootState } from './store';
 
 export const toggleTodoAsync = createAction<number>('toggleTodoAsync');
 
@@ -43,8 +44,8 @@ export const todosSlice = createSlice({
 });
 
 export const todosSelector = createSelector(
-  (state: any) => state.todos,
-  (todos) => todos.map((todo: any) => todo.id)
+  (state: RootState) => state.todos,
+  (todos) => todos.map((todo) => todo.id)
 );
 
 export const { addTodo, toggleTodo, removeTodo } = todosSlice.actions;
